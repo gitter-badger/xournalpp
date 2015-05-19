@@ -7,3 +7,6 @@ script:
   cd build;
   cmake ..;
   make;
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libglibmm libboost-all-dev glade-gtk2 libopenjpeg-dev
