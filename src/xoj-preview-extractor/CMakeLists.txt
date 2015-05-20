@@ -14,9 +14,6 @@ add_custom_command (TARGET xournal-thumbnailer POST_BUILD
   COMMAND strip xournal-thumbnailer
 )
 
-# Simple C++11 check
-target_compile_features (xournal-thumbnailer PRIVATE cxx_variadic_templates)
-
 ## Install ##
 
 install (TARGETS xournal-thumbnailer

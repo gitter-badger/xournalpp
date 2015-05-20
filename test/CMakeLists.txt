@@ -39,6 +39,3 @@ target_link_libraries (xournalpp-test
   ${xournalpp_LDFLAGS}
   ${CppUnit_LDFLAGS}
 )
-
-# Simple C++11 check
-target_compile_features (xournalpp-test PRIVATE cxx_variadic_templates)

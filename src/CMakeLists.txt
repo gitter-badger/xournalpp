@@ -91,9 +91,6 @@ add_dependencies (xournalpp-core
   util
 )
 
-# Simple C++11 check
-target_compile_features (xournalpp-core PRIVATE cxx_variadic_templates)
-
 ## xournalpp main program ##
 add_executable (xournalpp
   $<TARGET_OBJECTS:xournalpp-core>
@@ -106,9 +103,6 @@ add_dependencies (xournalpp
 )
 
 target_link_libraries (xournalpp ${xournalpp_LDFLAGS})
-
-# Simple C++11 check
-target_compile_features (xournalpp PRIVATE cxx_variadic_templates)
 
 install (TARGETS xournalpp
   RUNTIME DESTINATION bin
