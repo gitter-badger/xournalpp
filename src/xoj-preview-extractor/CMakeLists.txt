@@ -6,9 +6,12 @@ add_executable (xournal-thumbnailer
 )
 
 target_link_libraries (xournal-thumbnailer
-  ${Boost_LIBRARIES}
-  ${Glibmm_LDFLAGS}
+  ${xournalpp_LDFLAGS}
 )
+
+if (BUILD_BOOST)
+  add_dependencies (xournal-thumbnailer boost)
+endif (BUILD_BOOST)
 
 add_custom_command (TARGET xournal-thumbnailer POST_BUILD
   COMMAND strip xournal-thumbnailer

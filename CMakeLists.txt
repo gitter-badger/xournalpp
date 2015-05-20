@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 3.0)
 
 project ("Xournal++" LANGUAGES CXX C)
 set (PROJECT_VERSION "1.0.1")
@@ -15,24 +15,92 @@ include (GitRepo)
 
 ## Libraries ##
 
+# Boost (we start with boost, because if it'll be built it needs some linker tags)
+
+option (BUILD_BOOST "Build boost libraries into Xournal++" OFF)
+if (BUILD_BOOST)
+
+  include (ExternalProject)
+  ExternalProject_Add (boost
+    SVN_REPOSITORY http://svn.boost.org/svn/boost/branches/release
+
+    CONFIGURE_COMMAND cd "${CMAKE_BINARY_DIR}/boost-prefix/src/boost" && ./bootstrap.sh
+      --prefix="${CMAKE_BINARY_DIR}/boost-prefix"
+
+    BUILD_COMMAND cd "${CMAKE_BINARY_DIR}/boost-prefix/src/boost" && ./b2
+      --with-filesystem --with-iostreams --with-locale --with-thread --with-system
+      "--prefix=${CMAKE_BINARY_DIR}/boost-prefix"
+      "--build-dir=${CMAKE_BINARY_DIR}/boost-prefix/src/boost-build"
+      "--stagedir=${CMAKE_BINARY_DIR}/boost-prefix"
+      threading=multi link=static
+
+    INSTALL_COMMAND echo "Install is not necessary"
+  )
+
+  # ICU – needed for boost::locale
+  find_package (ICU COMPONENTS uc i18n)
+
+  link_directories ("${CMAKE_BINARY_DIR}/boost-prefix/lib/")
+  set (Boost_LIBRARIES
+    boost_filesystem
+    boost_locale
+    boost_iostreams
+    boost_thread
+    boost_system
+    ${ICU_LIBRARIES}
+  )
+  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} "${CMAKE_BINARY_DIR}/boost-prefix/src/boost/boost")
+
+else (BUILD_BOOST)
+
+  set (Boost_USE_MULTITHREADED ON)
+  find_package (Boost 1.54 REQUIRED COMPONENTS system filesystem locale iostreams thread)
+  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+
+endif (BUILD_BOOST)
+
+set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${Boost_LIBRARIES})
+
+# GTK+/Gnome
+
 pkg_check_modules (Gnome REQUIRED "gtk+-2.0 >= 2.18.3" "libglade-2.0 >= 2.6.4" "glib-2.0 >= 2.32.0" "gthread-2.0 >= 2.4.0")
 pkg_check_modules (Glibmm REQUIRED "glibmm-2.4 >= 2.24.0")
 
+# Other packages
+
 # librsvg-2.0 is not really needed by Xournal++, but if you don't have it, it crashes while loading the SVG icons
 # We also are compiling with libpoppler so we require a number of extra packages
-pkg_check_modules (OtherLibs REQUIRED "librsvg-2.0 >= 2.14.0" zlib fontconfig lcms)
+pkg_check_modules (OtherLibs REQUIRED "librsvg-2.0 >= 2.14.0" fontconfig lcms)
 
-set (Boost_USE_MULTITHREADED ON)
-find_package (Boost 1.54 REQUIRED COMPONENTS system filesystem locale iostreams thread)
-# TODO add possibility to build boost with Xournal++
+find_package (ZLIB REQUIRED)    # zlib
+find_package (Threads REQUIRED) # pthreads
+
+set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS}
+  ${Gnome_LDFLAGS}
+  ${Glibmm_LDFLAGS}
+  ${OtherLibs_LDFLAGS}
+  ${ZLIB_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+)
+set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS}
+  ${Gnome_INCLUDE_DIRS}
+  ${Glibmm_INCLUDE_DIRS}
+  ${OtherLibs_INCLUDE_DIRS}
+  ${ZLIB_INCLUDE_DIRS}
+)
 
 # JPEG
+
 option (ENABLE_LIBOPENJPEG "Use libopenjpeg instead of builtin jpeg2000 decoder" ON)
 if (ENABLE_LIBOPENJPEG)
   find_package (OpenJPEG REQUIRED)
+  set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${OPENJPEG_LIBRARIES} -lopenjpeg) # -lopenjpeg added as fallback
+  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${OPENJPEG_INCLUDE_DIRS})
 endif (ENABLE_LIBOPENJPEG)
 
 find_package (JPEG)
+set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${JPEG_LIBRARIES})
+set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${JPEG_INCLUDE_DIRS})
 if (NOT JPEG_FOUND)
   message (WARNING "JPEG loader will not be built (JPEG header file not found)")
 endif (NOT JPEG_FOUND)
@@ -51,6 +119,8 @@ endif (ENABLE_CPPUNIT)
 option (ENABLE_OS "Overlay Scrollbar support" OFF)
 if (ENABLE_OS)
   pkg_check_modules (os REQUIRED "overlay-scrollbar-0.1 >= 0.1.12")
+  set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${os_LDFLAGS})
+  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${os_INCLUDE_DIRS})
 endif (ENABLE_OS)
 
 # Mathtex

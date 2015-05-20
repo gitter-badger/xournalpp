@@ -35,6 +35,10 @@ add_dependencies (xournalpp-test
   util
 )
 
+if (BUILD_BOOST)
+  add_dependencies (xournalpp-core boost)
+endif (BUILD_BOOST)
+
 target_link_libraries (xournalpp-test
   ${xournalpp_LDFLAGS}
   ${CppUnit_LDFLAGS}

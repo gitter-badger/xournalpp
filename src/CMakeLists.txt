@@ -12,24 +12,19 @@ include_directories (
   "${PROJECT_SOURCE_DIR}/src/pdf/popplerdirect/poppler-0.24.1_build/poppler"
   "${PROJECT_SOURCE_DIR}/src/pdf/popplerdirect/poppler-0.24.1"
 
-  ${Gnome_INCLUDE_DIRS}
-  ${Glibmm_INCLUDE_DIRS}
-  ${OtherLibs_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
-  ${OPENJPEG_INCLUDE_DIR}
-  ${JPEG_INCLUDE_DIR}
+  ${xournalpp_INCLUDE_DIRS}
 )
 
 # Build xournal-thumbnailer as it doesn't need CXX_FLAGS from below
 add_subdirectory (xoj-preview-extractor)
 
-option (DEBUG_COMPILE "Pass -Wall to CXX_FLAGS" OFF)
-mark_as_advanced (FORCE DEBUG_COMPILE)
-
 # Used for both util and xournalpp targets
 set (CMAKE_CXX_FLAGS
   "${CMAKE_CXX_FLAGS} -g -rdynamic -Wreturn-type -Wuninitialized -Wunused-value -Wunused-variable"
 )
+
+option (DEBUG_COMPILE "Pass -Wall to CXX_FLAGS" OFF)
+mark_as_advanced (FORCE DEBUG_COMPILE)
 
 if (DEBUG_COMPILE)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
@@ -46,12 +41,7 @@ set (xournalpp_LDFLAGS
   libpoppler.a
   libpoppler-glib.a
 
-  ${Gnome_LDFLAGS}
-  ${Glibmm_LDFLAGS}
-  ${OtherLibs_LDFLAGS}
-  ${Boost_LIBRARIES}
-  ${OPENJPEG_LIBRARIES}
-  ${JPEG_LIBRARIES}
+  ${xournalpp_LDFLAGS}
 )
 
 ## Build util lib ##
@@ -91,6 +81,10 @@ add_dependencies (xournalpp-core
   util
 )
 
+if (BUILD_BOOST)
+  add_dependencies (xournalpp-core boost)
+endif (BUILD_BOOST)
+
 ## xournalpp main program ##
 add_executable (xournalpp
   $<TARGET_OBJECTS:xournalpp-core>
@@ -101,6 +95,10 @@ add_dependencies (xournalpp
   poppler
   util
 )
+
+if (BUILD_BOOST)
+  add_dependencies (xournalpp boost)
+endif (BUILD_BOOST)
 
 target_link_libraries (xournalpp ${xournalpp_LDFLAGS})
 
