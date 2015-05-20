@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.3)
+\cmake_minimum_required (VERSION 2.8.3)
 
 project ("Xournal++" LANGUAGES CXX C)
 set (PROJECT_VERSION "1.0.1")
@@ -257,4 +257,8 @@ Configuration:
 
 Unstable features:
 	Layers sidebar:            ${UNSTABLE_LAYERS_SIDEBAR}
+
+Static libraries:
+	Poppler:                   ON (it cannot be changed)
+	Boost:                     ${BUILD_BOOST}
 ")
