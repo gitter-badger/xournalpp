@@ -2,10 +2,12 @@ language: cpp
 compiler:
   - gcc
   - clang
+install:
+  - wget -qO- http://www.cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.tar.gz | tar xvz
 script:
   mkdir build;
   cd build;
-  cmake ..;
+  ./cmake-3.1.3-Linux-x86_64/bin/cmake ..;
   make;
 before_install:
   - sudo apt-get update -qq
