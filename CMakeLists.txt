@@ -267,3 +267,5 @@ Static libraries:
 	Poppler:                   ON (it cannot be changed)
 	Boost:                     ${BUILD_BOOST}
 ")
+
+message ("${xournalpp_INCLUDE_DIRS}")
