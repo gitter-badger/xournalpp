@@ -9,7 +9,7 @@ before_install:
   - sudo apt-get install -y libglibmm-2.4-dev libboost-all-dev glade-gtk2 libopenjpeg-dev
   - wget http://www.cmake.org/files/v2.8/cmake-2.8.8-Linux-i386.tar.gz
   - tar -xvf cmake-2.8.8-Linux-i386.tar.gz
-  - env CMAKE_DIR="`pwd`/cmake-2.8.8-Linux-i386"
+  - export CMAKE_DIR="`pwd`/cmake-2.8.8-Linux-i386"
   - chmod -R +x "$CMAKE_DIR/bin/"
 
 before_script:
