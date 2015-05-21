@@ -23,6 +23,7 @@ if (BUILD_BOOST)
   include (ExternalProject)
   ExternalProject_Add (boost
     SVN_REPOSITORY http://svn.boost.org/svn/boost/branches/release
+    LOG_DOWNLOAD 0
 
     CONFIGURE_COMMAND cd "${CMAKE_BINARY_DIR}/boost-prefix/src/boost" && ./bootstrap.sh
       --prefix="${CMAKE_BINARY_DIR}/boost-prefix"
