@@ -50,7 +50,7 @@ if (BUILD_BOOST)
     boost_system
     ${ICU_LIBRARIES}
   )
-  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} "${CMAKE_BINARY_DIR}/boost-prefix/src/boost/boost")
+  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} "${CMAKE_BINARY_DIR}/boost-prefix/src/boost")
 
 else (BUILD_BOOST)
 
