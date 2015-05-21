@@ -39,6 +39,10 @@ if (BUILD_BOOST)
   add_dependencies (xournalpp-core boost)
 endif (BUILD_BOOST)
 
+if (BUILD_GLIBMM)
+  add_dependencies (xournalpp-core glibmm)
+endif (BUILD_GLIBMM)
+
 target_link_libraries (xournalpp-test
   ${xournalpp_LDFLAGS}
   ${CppUnit_LDFLAGS}

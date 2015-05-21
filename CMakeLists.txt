@@ -50,7 +50,8 @@ if (BUILD_BOOST)
     boost_system
     ${ICU_LIBRARIES}
   )
-  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} "${CMAKE_BINARY_DIR}/boost-prefix/src/boost")
+
+  set (Boost_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/boost-prefix/src/boost")
 
 else (BUILD_BOOST)
 
@@ -59,16 +60,45 @@ else (BUILD_BOOST)
   if (Boost_VERSION VERSION_LESS 1.54)
     message (FATAL_ERROR "Boost 1.54 or newer not found – you should enable BUILD_BOOST cmake variable")
   endif (Boost_VERSION VERSION_LESS 1.54)
-  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 endif (BUILD_BOOST)
 
 set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${Boost_LIBRARIES})
+set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 # GTK+/Gnome
-
 pkg_check_modules (Gnome REQUIRED "gtk+-2.0 >= 2.18.3" "libglade-2.0 >= 2.6.4" "glib-2.0 >= 2.32.0" "gthread-2.0 >= 2.4.0")
-pkg_check_modules (Glibmm REQUIRED "glibmm-2.4 >= 2.38.0")
+
+# Glibmm
+option (BUILD_GLIBMM "Build Glibmm libraries into Xournal++" OFF)
+if (BUILD_GLIBMM)
+
+  include (ExternalProject)
+  ExternalProject_Add (glibmm
+    GIT_REPOSITORY https://github.com/GNOME/glibmm.git
+
+    CONFIGURE_COMMAND cd "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm" && ./autogen.sh --enable-static
+    BUILD_COMMAND cd "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm" && make
+
+    INSTALL_COMMAND ""
+  )
+
+  link_directories (
+    "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/glib/glibmm/.libs"
+    "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/gio/giomm/.libs"
+  )
+  set (Glibmm_LDFLAGS
+    glibmm-2.4
+    giomm-2.4
+  )
+
+  set (Glibmm_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/glib")
+
+else (BUILD_GLIBMM)
+
+  pkg_check_modules (Glibmm REQUIRED "glibmm-2.4 >= 2.38.0")
+
+endif (BUILD_GLIBMM)
 
 # Other packages
 

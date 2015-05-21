@@ -89,6 +89,10 @@ if (BUILD_BOOST)
   add_dependencies (xournalpp-core boost)
 endif (BUILD_BOOST)
 
+if (BUILD_GLIBMM)
+  add_dependencies (xournalpp-core glibmm)
+endif (BUILD_GLIBMM)
+
 ## xournalpp main program ##
 add_executable (xournalpp
   $<TARGET_OBJECTS:xournalpp-core>
@@ -103,6 +107,10 @@ add_dependencies (xournalpp
 if (BUILD_BOOST)
   add_dependencies (xournalpp boost)
 endif (BUILD_BOOST)
+
+if (BUILD_GLIBMM)
+  add_dependencies (xournalpp glibmm)
+endif (BUILD_GLIBMM)
 
 target_link_libraries (xournalpp ${xournalpp_LDFLAGS})
 
