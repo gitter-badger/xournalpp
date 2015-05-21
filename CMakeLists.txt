@@ -55,7 +55,10 @@ if (BUILD_BOOST)
 else (BUILD_BOOST)
 
   set (Boost_USE_MULTITHREADED ON)
-  find_package (Boost 1.54 REQUIRED COMPONENTS system filesystem locale iostreams thread)
+  find_package (Boost 1.54 COMPONENTS system filesystem locale iostreams thread)
+  if (Boost_VERSION VERSION_LESS 1.54)
+    message (FATAL_ERROR "Boost 1.54 or newer not found – you should enable BUILD_BOOST cmake variable")
+  endif (Boost_VERSION VERSION_LESS 1.54)
   set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 endif (BUILD_BOOST)
