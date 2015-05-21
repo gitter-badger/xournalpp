@@ -19,7 +19,7 @@ before_script:
   - cd build
 
 script:
-  - $CMAKE_DIR/bin/cmake .. -DBUILD_BOOST:BOOST=ON
+  - cmake .. -DBUILD_BOOST:BOOST=ON
   - make
 
 os: linux
