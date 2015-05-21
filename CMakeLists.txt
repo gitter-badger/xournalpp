@@ -68,7 +68,7 @@ set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${Boost_LIBRARIES})
 # GTK+/Gnome
 
 pkg_check_modules (Gnome REQUIRED "gtk+-2.0 >= 2.18.3" "libglade-2.0 >= 2.6.4" "glib-2.0 >= 2.32.0" "gthread-2.0 >= 2.4.0")
-pkg_check_modules (Glibmm REQUIRED "glibmm-2.4 >= 2.24.0")
+pkg_check_modules (Glibmm REQUIRED "glibmm-2.4 >= 2.38.0")
 
 # Other packages
 
