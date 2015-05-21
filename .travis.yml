@@ -7,13 +7,15 @@ compiler:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y libglibmm-2.4-dev libboost-all-dev glade-gtk2 libopenjpeg-dev
+  - wget http://www.cmake.org/files/v2.8/cmake-2.8.8-Linux-i386.tar.gz
+  - tar -xf cmake-2.8.8-Linux-i386.tar.gz
 
 before_script:
   - mkdir build
   - cd build
 
 script:
-  - cmake .. -DBUILD_BOOST:BOOST=ON
+  - ./cmake-2.8.8-Linux-i386/bin/cmake .. -DBUILD_BOOST:BOOST=ON
   - make
 
 os: linux

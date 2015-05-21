@@ -1,10 +1,8 @@
 cmake_minimum_required (VERSION 2.8.3)
 
-project ("Xournal++")
+project ("Xournal++" CXX C)
 set (PROJECT_VERSION "1.0.1")
 set (PROJECT_PACKAGE "xournalpp")
-enable_language(CXX)
-enable_language(C)
 
 set (PROJECT_STRING "${PROJECT_NAME} ${PROJECT_VERSION}")
 set (PROJECT_URL "https://github.com/xournalpp/xournalpp")
