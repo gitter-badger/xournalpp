@@ -19,7 +19,7 @@ before_script:
   - cd build
 
 script:
-  - cmake .. -DBUILD_BOOST:BOOST=ON -DCMAKE_COLOR_MAKEFILE:BOOL=OFF
+  - cmake .. -DBUILD_BOOST:BOOST=ON
   - make
 
 os: linux
