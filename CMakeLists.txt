@@ -70,18 +70,39 @@ set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 pkg_check_modules (Gnome REQUIRED "gtk+-2.0 >= 2.18.3" "libglade-2.0 >= 2.6.4" "glib-2.0 >= 2.32.0" "gthread-2.0 >= 2.4.0")
 
 # Glibmm
+
 option (BUILD_GLIBMM "Build Glibmm libraries into Xournal++" OFF)
 if (BUILD_GLIBMM)
 
   include (ExternalProject)
+
+  find_program (PATH_mm-common-prepare mm-common-prepare)
+  if (NOT PATH_mm-common-prepare)
+
+    ExternalProject_Add (mm-common
+      GIT_REPOSITORY https://github.com/GNOME/mm-common.git
+
+      CONFIGURE_COMMAND cd "${CMAKE_BINARY_DIR}/mm-common-prefix/src/mm-common" && ./autogen.sh --enable-network
+      BUILD_COMMAND cd "${CMAKE_BINARY_DIR}/mm-common-prefix/src/mm-common" && make
+      INSTALL_COMMAND ""
+    )
+
+    add_custom_command(TARGET mm-common COMMAND  chmod -v +x "${CMAKE_BINARY_DIR}/mm-common-prefix/src/mm-common/util/mm-common-prepare")
+    set (ENV{PATH} "$ENV{PATH}:${CMAKE_BINARY_DIR}/mm-common-prefix/src/mm-common/util")
+
+  endif (NOT PATH_mm-common-prepare)
+
   ExternalProject_Add (glibmm
     GIT_REPOSITORY https://github.com/GNOME/glibmm.git
 
     CONFIGURE_COMMAND cd "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm" && ./autogen.sh --enable-static
     BUILD_COMMAND cd "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm" && make
-
     INSTALL_COMMAND ""
   )
+
+  if (NOT PATH_mm-common-prepare)
+    add_dependencies (glibmm mm-common)
+  endif (NOT PATH_mm-common-prepare)
 
   link_directories (
     "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/glib/glibmm/.libs"
@@ -288,17 +309,18 @@ add_custom_target (desktop-uninstall
 message ("
 
 Configuration:
-	Compiler:                  ${CMAKE_CXX_COMPILER}
-	Overlay Scrollbar enabled: ${ENABLE_OS}
-	Mathtex enabled:           ${ENABLE_MATHTEX}
-	CppUnit enabled:           ${ENABLE_CPPUNIT}
+	Compiler:                   ${CMAKE_CXX_COMPILER}
+	Overlay Scrollbar enabled:  ${ENABLE_OS}
+	Mathtex enabled:            ${ENABLE_MATHTEX}
+	CppUnit enabled:            ${ENABLE_CPPUNIT}
 
 Unstable features:
-	Layers sidebar:            ${UNSTABLE_LAYERS_SIDEBAR}
+	Layers sidebar:             ${UNSTABLE_LAYERS_SIDEBAR}
 
 Static libraries:
-	Poppler:                   ON (it cannot be changed)
-	Boost:                     ${BUILD_BOOST}
+	Poppler:                    ON (it cannot be changed)
+	Boost:                      ${BUILD_BOOST}
+	Glibmm:                     ${BUILD_GLIBMM}
 ")
 
 message ("${xournalpp_INCLUDE_DIRS}")
