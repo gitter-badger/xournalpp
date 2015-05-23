@@ -9,6 +9,6 @@ if (BUILD_BOOST)
   add_dependencies (util boost)
 endif (BUILD_BOOST)
 
-if (BUILD_GLIBMM)
+if (EXT_GLIBMM)
   add_dependencies (util glibmm)
-endif (BUILD_GLIBMM)
+endif (EXT_GLIBMM)

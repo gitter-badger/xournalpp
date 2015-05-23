@@ -15,33 +15,39 @@ include (GitRepo)
 
 ## Libraries ##
 
-# Boost (we start with boost, because if it'll be built it needs some linker tags)
+macro (add_includes_ldflags LDFLAGS INCLUDES)
+    set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${LDFLAGS})
+    set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${INCLUDES})
+endmacro (add_includes_ldflags LDFLAGS INCLUDES)
 
+# Boost (we start with boost, because if it'll be built it needs some linker tags)
 option (BUILD_BOOST "Build boost libraries into Xournal++" OFF)
 if (BUILD_BOOST)
+
+  set (BOOST_PREFIX "${CMAKE_BINARY_DIR}/boost-prefix")
 
   include (ExternalProject)
   ExternalProject_Add (boost
     SVN_REPOSITORY http://svn.boost.org/svn/boost/branches/release
     LOG_DOWNLOAD 1
 
-    CONFIGURE_COMMAND cd "${CMAKE_BINARY_DIR}/boost-prefix/src/boost" && ./bootstrap.sh
+    CONFIGURE_COMMAND cd "${BOOST_PREFIX}/src/boost" && ./bootstrap.sh
       --prefix="${CMAKE_BINARY_DIR}/boost-prefix"
 
-    BUILD_COMMAND cd "${CMAKE_BINARY_DIR}/boost-prefix/src/boost" && ./b2
+    BUILD_COMMAND cd "${BOOST_PREFIX}/src/boost" && ./b2
       --with-filesystem --with-iostreams --with-locale --with-thread --with-system
-      "--prefix=${CMAKE_BINARY_DIR}/boost-prefix"
-      "--build-dir=${CMAKE_BINARY_DIR}/boost-prefix/src/boost-build"
-      "--stagedir=${CMAKE_BINARY_DIR}/boost-prefix"
+      "--prefix=${BOOST_PREFIX}"
+      "--build-dir=${BOOST_PREFIX}/src/boost-build"
+      "--stagedir=${BOOST_PREFIX}"
       threading=multi link=static
 
-    INSTALL_COMMAND echo "Install is not necessary"
+    INSTALL_COMMAND ""
   )
 
   # ICU – needed for boost::locale
   find_package (ICU COMPONENTS uc i18n)
 
-  link_directories ("${CMAKE_BINARY_DIR}/boost-prefix/lib/")
+  link_directories ("${BOOST_PREFIX}/lib/")
   set (Boost_LIBRARIES
     boost_filesystem
     boost_locale
@@ -50,8 +56,7 @@ if (BUILD_BOOST)
     boost_system
     ${ICU_LIBRARIES}
   )
-
-  set (Boost_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/boost-prefix/src/boost")
+  set (Boost_INCLUDE_DIRS "${BOOST_PREFIX}/src/boost")
 
 else (BUILD_BOOST)
 
@@ -62,100 +67,63 @@ else (BUILD_BOOST)
   endif (Boost_VERSION VERSION_LESS 1.54)
 
 endif (BUILD_BOOST)
-
-set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${Boost_LIBRARIES})
-set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+add_includes_ldflags ("${Boost_LIBRARIES}" "${Boost_INCLUDE_DIRS}")
 
 # GTK+/Gnome
 pkg_check_modules (Gnome REQUIRED "gtk+-2.0 >= 2.18.3" "libglade-2.0 >= 2.6.4" "glib-2.0 >= 2.32.0" "gthread-2.0 >= 2.4.0")
+add_includes_ldflags ("${Gnome_LDFLAGS}" "${Gnome_INCLUDE_DIRS}")
 
 # Glibmm
+option (EXT_GLIBMM "Download external Glibmm library" OFF)
+if (EXT_GLIBMM)
 
-option (BUILD_GLIBMM "Build Glibmm libraries into Xournal++" OFF)
-if (BUILD_GLIBMM)
+  include (ExternalDeb)
+  ExternalDeb_Add (glibmm "http://ftp.de.debian.org/debian/pool/main/g/glibmm2.4/libglibmm-2.4-dev_2.42.0-1_%ARCH%.deb")
 
-  include (ExternalProject)
-
-  find_program (PATH_mm-common-prepare mm-common-prepare)
-  if (NOT PATH_mm-common-prepare)
-
-    ExternalProject_Add (mm-common
-      GIT_REPOSITORY https://github.com/GNOME/mm-common.git
-
-      CONFIGURE_COMMAND cd "${CMAKE_BINARY_DIR}/mm-common-prefix/src/mm-common" && ./autogen.sh --enable-network
-      BUILD_COMMAND cd "${CMAKE_BINARY_DIR}/mm-common-prefix/src/mm-common" && make
-      INSTALL_COMMAND ""
-    )
-
-    add_custom_command(TARGET mm-common COMMAND  chmod -v +x "${CMAKE_BINARY_DIR}/mm-common-prefix/src/mm-common/util/mm-common-prepare")
-    set (ENV{PATH} "$ENV{PATH}:${CMAKE_BINARY_DIR}/mm-common-prefix/src/mm-common/util")
-
-  endif (NOT PATH_mm-common-prepare)
-
-  ExternalProject_Add (glibmm
-    GIT_REPOSITORY https://github.com/GNOME/glibmm.git
-
-    CONFIGURE_COMMAND cd "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm" && ./autogen.sh --enable-static
-    BUILD_COMMAND cd "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm" && make
-    INSTALL_COMMAND ""
-  )
-
-  if (NOT PATH_mm-common-prepare)
-    add_dependencies (glibmm mm-common)
-  endif (NOT PATH_mm-common-prepare)
+  set (GLIBMM_PREFIX "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/")
 
   link_directories (
-    "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/glib/glibmm/.libs"
-    "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/gio/giomm/.libs"
+    "${GLIBMM_PREFIX}/usr/lib/*"
   )
   set (Glibmm_LDFLAGS
     glibmm-2.4
     giomm-2.4
   )
+  set (Glibmm_INCLUDE_DIRS
+    "${GLIBMM_PREFIX}/usr/include/glibmm-2.4"
+    "${GLIBMM_PREFIX}/usr/include/giomm-2.4"    
+  )
 
-  set (Glibmm_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/glib")
-
-else (BUILD_GLIBMM)
-
+else (EXT_GLIBMM)
   pkg_check_modules (Glibmm REQUIRED "glibmm-2.4 >= 2.38.0")
-
-endif (BUILD_GLIBMM)
+endif (EXT_GLIBMM)
+add_includes_ldflags ("${Glibmm_LDFLAGS}" "${Glibmm_INCLUDE_DIRS}")
 
 # Other packages
 
 # librsvg-2.0 is not really needed by Xournal++, but if you don't have it, it crashes while loading the SVG icons
 # We also are compiling with libpoppler so we require a number of extra packages
 pkg_check_modules (OtherLibs REQUIRED "librsvg-2.0 >= 2.14.0" fontconfig lcms)
+add_includes_ldflags ("${OtherLibs_LDFLAGS}" "${OtherLibs_INCLUDE_DIRS}")
 
+# zlib
 find_package (ZLIB REQUIRED)    # zlib
-find_package (Threads REQUIRED) # pthreads
+add_includes_ldflags ("${ZLIB_LIBRARIES}" "${ZLIB_INCLUDE_DIRS}")
 
-set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS}
-  ${Gnome_LDFLAGS}
-  ${Glibmm_LDFLAGS}
-  ${OtherLibs_LDFLAGS}
-  ${ZLIB_LIBRARIES}
-  ${CMAKE_THREAD_LIBS_INIT}
-)
-set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS}
-  ${Gnome_INCLUDE_DIRS}
-  ${Glibmm_INCLUDE_DIRS}
-  ${OtherLibs_INCLUDE_DIRS}
-  ${ZLIB_INCLUDE_DIRS}
-)
+# pthreads
+find_package (Threads REQUIRED) # pthreads
+set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${CMAKE_THREAD_LIBS_INIT})
 
 # JPEG
 
 option (ENABLE_LIBOPENJPEG "Use libopenjpeg instead of builtin jpeg2000 decoder" ON)
 if (ENABLE_LIBOPENJPEG)
   find_package (OpenJPEG REQUIRED)
-  set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${OPENJPEG_LIBRARIES} -lopenjpeg) # -lopenjpeg added as fallback
-  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${OPENJPEG_INCLUDE_DIRS})
+  add_includes_ldflags ("${OPENJPEG_LIBRARIES};-lopenjpeg" "${OPENJPEG_INCLUDE_DIRS}") # -lopenjpeg added as fallback
 endif (ENABLE_LIBOPENJPEG)
 
 find_package (JPEG)
-set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${JPEG_LIBRARIES})
-set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${JPEG_INCLUDE_DIRS})
+add_includes_ldflags ("${JPEG_LIBRARIES}" "${JPEG_INCLUDE_DIRS}")
 if (NOT JPEG_FOUND)
   message (WARNING "JPEG loader will not be built (JPEG header file not found)")
 endif (NOT JPEG_FOUND)
@@ -174,8 +142,7 @@ endif (ENABLE_CPPUNIT)
 option (ENABLE_OS "Overlay Scrollbar support" OFF)
 if (ENABLE_OS)
   pkg_check_modules (os REQUIRED "overlay-scrollbar-0.1 >= 0.1.12")
-  set (xournalpp_LDFLAGS ${xournalpp_LDFLAGS} ${os_LDFLAGS})
-  set (xournalpp_INCLUDE_DIRS ${xournalpp_INCLUDE_DIRS} ${os_INCLUDE_DIRS})
+  add_includes_ldflags ("${os_LDFLAGS}" "${${_INCLUDE_DIRS}")
 endif (ENABLE_OS)
 
 # Mathtex
@@ -254,9 +221,9 @@ if(COMPILER_SUPPORTS_CXX11)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-endif()
+else(COMPILER_SUPPORTS_CXX11)
+    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif(COMPILER_SUPPORTS_CXX11)
 
 ## Source building ##
 add_subdirectory (src)
@@ -273,7 +240,8 @@ install (DIRECTORY ui
 configure_file (
   cmake/cmake_uninstall.cmake.in
   cmake/cmake_uninstall.cmake
-  IMMEDIATE @ONLY)
+  IMMEDIATE @ONLY
+)
 
 add_custom_target (uninstall
   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake
@@ -320,7 +288,12 @@ Unstable features:
 Static libraries:
 	Poppler:                    ON (it cannot be changed)
 	Boost:                      ${BUILD_BOOST}
-	Glibmm:                     ${BUILD_GLIBMM}
+	Glibmm:                     ${EXT_GLIBMM}
 ")
 
-message ("${xournalpp_INCLUDE_DIRS}")
+option (CMAKE_DEBUG_INCLUDES_LDFLAGS "List include dirs and ldflags for xournalpp target" OFF)
+mark_as_advanced (FORCE CMAKE_DEBUG_INCLUDES_LDFLAGS)
+if (CMAKE_DEBUG_INCLUDES_LDFLAGS)
+    message ("Include directories: ${xournalpp_INCLUDE_DIRS}")
+    message ("LDFLAGS: ${xournalpp_LDFLAGS}")
+endif (CMAKE_DEBUG_INCLUDES_LDFLAGS)

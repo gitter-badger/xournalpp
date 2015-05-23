@@ -89,9 +89,9 @@ if (BUILD_BOOST)
   add_dependencies (xournalpp-core boost)
 endif (BUILD_BOOST)
 
-if (BUILD_GLIBMM)
+if (EXT_GLIBMM)
   add_dependencies (xournalpp-core glibmm)
-endif (BUILD_GLIBMM)
+endif (EXT_GLIBMM)
 
 ## xournalpp main program ##
 add_executable (xournalpp
@@ -100,17 +100,10 @@ add_executable (xournalpp
 )
 
 add_dependencies (xournalpp
+  xournalpp-core
   poppler
   util
 )
-
-if (BUILD_BOOST)
-  add_dependencies (xournalpp boost)
-endif (BUILD_BOOST)
-
-if (BUILD_GLIBMM)
-  add_dependencies (xournalpp glibmm)
-endif (BUILD_GLIBMM)
 
 target_link_libraries (xournalpp ${xournalpp_LDFLAGS})
 
@@ -120,7 +113,7 @@ install (TARGETS xournalpp
 )
 
 if (ENABLE_CPPUNIT)
-  add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
+  add_subdirectory (${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
 endif (ENABLE_CPPUNIT)
 
 if (ENABLE_MATHTEX)

@@ -13,9 +13,9 @@ if (BUILD_BOOST)
   add_dependencies (xournal-thumbnailer boost)
 endif (BUILD_BOOST)
 
-if (BUILD_GLIBMM)
+if (EXT_GLIBMM)
   add_dependencies (xournal-thumbnailer glibmm)
-endif (BUILD_GLIBMM)
+endif (EXT_GLIBMM)
 
 add_custom_command (TARGET xournal-thumbnailer POST_BUILD
   COMMAND strip xournal-thumbnailer

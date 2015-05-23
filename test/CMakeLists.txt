@@ -31,17 +31,10 @@ add_executable (xournalpp-test
 )
 
 add_dependencies (xournalpp-test
+  xournalpp-core
   poppler
   util
 )
-
-if (BUILD_BOOST)
-  add_dependencies (xournalpp-core boost)
-endif (BUILD_BOOST)
-
-if (BUILD_GLIBMM)
-  add_dependencies (xournalpp-core glibmm)
-endif (BUILD_GLIBMM)
 
 target_link_libraries (xournalpp-test
   ${xournalpp_LDFLAGS}
