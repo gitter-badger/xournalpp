@@ -6,7 +6,9 @@ add_executable (xournal-thumbnailer
 )
 
 target_link_libraries (xournal-thumbnailer
-  ${xournalpp_LDFLAGS}
+  ${Boost_LIBRARIES}
+  ${Glibmm_LDFLAGS}
+  ${Gnome_LDFLAGS}
 )
 
 if (BUILD_BOOST)
@@ -14,11 +16,11 @@ if (BUILD_BOOST)
 endif (BUILD_BOOST)
 
 if (EXT_GLIBMM)
-  add_dependencies (xournal-thumbnailer glibmm)
+  add_dependencies (xournal-thumbnailer Glibmm)
 endif (EXT_GLIBMM)
 
 add_custom_command (TARGET xournal-thumbnailer POST_BUILD
-  COMMAND strip xournal-thumbnailer
+  COMMAND ${CMAKE_STRIP} xournal-thumbnailer
 )
 
 ## Install ##

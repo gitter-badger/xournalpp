@@ -76,24 +76,9 @@ add_includes_ldflags ("${Gnome_LDFLAGS}" "${Gnome_INCLUDE_DIRS}")
 # Glibmm
 option (EXT_GLIBMM "Download external Glibmm library" OFF)
 if (EXT_GLIBMM)
-
   include (ExternalDeb)
-  ExternalDeb_Add (glibmm "http://ftp.de.debian.org/debian/pool/main/g/glibmm2.4/libglibmm-2.4-dev_2.42.0-1_%ARCH%.deb")
-
-  set (GLIBMM_PREFIX "${CMAKE_BINARY_DIR}/glibmm-prefix/src/glibmm/")
-
-  link_directories (
-    "${GLIBMM_PREFIX}/usr/lib/*"
-  )
-  set (Glibmm_LDFLAGS
-    glibmm-2.4
-    giomm-2.4
-  )
-  set (Glibmm_INCLUDE_DIRS
-    "${GLIBMM_PREFIX}/usr/include/glibmm-2.4"
-    "${GLIBMM_PREFIX}/usr/include/giomm-2.4"    
-  )
-
+  ExternalDeb_Add (Glibmm "http://ftp.de.debian.org/debian/pool/main/g/glibmm2.4/libglibmm-2.4-dev_2.42.0-1_%ARCH%.deb")
+  set (Glibmm_LDFLAGS ${Glibmm_SLIBRARIES})
 else (EXT_GLIBMM)
   pkg_check_modules (Glibmm REQUIRED "glibmm-2.4 >= 2.38.0")
 endif (EXT_GLIBMM)
@@ -295,5 +280,5 @@ option (CMAKE_DEBUG_INCLUDES_LDFLAGS "List include dirs and ldflags for xournalp
 mark_as_advanced (FORCE CMAKE_DEBUG_INCLUDES_LDFLAGS)
 if (CMAKE_DEBUG_INCLUDES_LDFLAGS)
     message ("Include directories: ${xournalpp_INCLUDE_DIRS}")
-    message ("LDFLAGS: ${xournalpp_LDFLAGS}")
+    message ("LDFLAGS/LIBRARIES: ${xournalpp_LDFLAGS}")
 endif (CMAKE_DEBUG_INCLUDES_LDFLAGS)

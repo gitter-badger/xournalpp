@@ -43,13 +43,32 @@ function (ExternalDeb_add NAME URL)
     set (URL "${URL}")
     string (REPLACE "%ARCH%" ${ARCH} URL "${URL}")
 
+    set (GLIBMM_PREFIX "${CMAKE_BINARY_DIR}/${NAME}-prefix")
+
     include (ExternalProject)
     ExternalProject_Add (${NAME}
-        DOWNLOAD_COMMAND cd glibmm && ${PATH_WGET} -O ${NAME}.deb ${URL} && ar x ${NAME}.deb && tar -xf data.tar.xz
+        DOWNLOAD_COMMAND cd ${NAME} && ${PATH_WGET} -O ${NAME}.deb ${URL} && ar x ${NAME}.deb && tar -xf data.tar.xz
 
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ""
     )
+
+    set (${NAME}_FOUND TRUE PARENT_SCOPE)
+
+    file (GLOB INCLUDE_DIRS "${GLIBMM_PREFIX}/src/${NAME}/usr/include/*")
+    set (${NAME}_INCLUDE_DIRS "${INCLUDE_DIRS}" PARENT_SCOPE)
+
+    file (GLOB LIBRARY_DIRS "${GLIBMM_PREFIX}/src/${NAME}/usr/lib/*")
+    set (${NAME}_LIBRARY_DIRS "${LIBRARY_DIRS}" PARENT_SCOPE)
+    link_directories (${LIBRARY_DIRS})
+
+    foreach (DIRECTORY ${LIBRARY_DIRS})
+        file (GLOB SLIBRARIES_TMP "${DIRECTORY}/*.a")
+        set (${NAME}_SLIBRARIES ${${NAME}_SLIBRARIES} ${SLIBRARIES_TMP} PARENT_SCOPE)
+
+        file (GLOB DLIBRARIES_TMP "${DIRECTORY}/*.so")
+        set (${NAME}_DLIBRARIES ${${NAME}_DLIBRARIES} ${DLIBRARIES_TMP} PARENT_SCOPE)
+    endforeach (DIRECTORY)
 
 endfunction (ExternalDeb_add)

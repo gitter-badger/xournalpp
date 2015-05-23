@@ -90,7 +90,7 @@ if (BUILD_BOOST)
 endif (BUILD_BOOST)
 
 if (EXT_GLIBMM)
-  add_dependencies (xournalpp-core glibmm)
+  add_dependencies (xournalpp-core Glibmm)
 endif (EXT_GLIBMM)
 
 ## xournalpp main program ##
