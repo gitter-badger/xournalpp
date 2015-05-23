@@ -8,6 +8,7 @@ add_executable (xournal-thumbnailer
 target_link_libraries (xournal-thumbnailer
   ${Boost_LIBRARIES}
   ${Glibmm_LDFLAGS}
+  ${ZLIB_LIBRARIES}
   ${Gnome_LDFLAGS}
 )
 
