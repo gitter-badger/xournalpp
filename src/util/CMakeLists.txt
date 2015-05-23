@@ -8,7 +8,3 @@ add_dependencies (util poppler)
 if (BUILD_BOOST)
   add_dependencies (util boost)
 endif (BUILD_BOOST)
-
-if (EXT_GLIBMM)
-  add_dependencies (util Glibmm)
-endif (EXT_GLIBMM)

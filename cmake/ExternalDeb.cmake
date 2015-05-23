@@ -44,22 +44,20 @@ function (ExternalDeb_add NAME URL)
     string (REPLACE "%ARCH%" ${ARCH} URL "${URL}")
 
     set (GLIBMM_PREFIX "${CMAKE_BINARY_DIR}/${NAME}-prefix")
+    file (MAKE_DIRECTORY "${GLIBMM_PREFIX}")
 
-    include (ExternalProject)
-    ExternalProject_Add (${NAME}
-        DOWNLOAD_COMMAND cd ${NAME} && ${PATH_WGET} -O ${NAME}.deb ${URL} && ar x ${NAME}.deb && tar -xf data.tar.xz
-
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        INSTALL_COMMAND ""
-    )
+    if (NOT EXISTS "${GLIBMM_PREFIX}/usr")
+        execute_process (COMMAND ${PATH_WGET} -O ${NAME}.deb ${URL} WORKING_DIRECTORY "${GLIBMM_PREFIX}")
+        execute_process (COMMAND ar x ${NAME}.deb WORKING_DIRECTORY "${GLIBMM_PREFIX}")
+        execute_process (COMMAND tar -xf data.tar.xz WORKING_DIRECTORY "${GLIBMM_PREFIX}")
+    endif (NOT EXISTS "${GLIBMM_PREFIX}/usr")
 
     set (${NAME}_FOUND TRUE PARENT_SCOPE)
 
-    file (GLOB INCLUDE_DIRS "${GLIBMM_PREFIX}/src/${NAME}/usr/include/*")
+    file (GLOB INCLUDE_DIRS "${GLIBMM_PREFIX}/usr/include/*")
     set (${NAME}_INCLUDE_DIRS "${INCLUDE_DIRS}" PARENT_SCOPE)
 
-    file (GLOB LIBRARY_DIRS "${GLIBMM_PREFIX}/src/${NAME}/usr/lib/*")
+    file (GLOB LIBRARY_DIRS "${GLIBMM_PREFIX}/usr/lib/*")
     set (${NAME}_LIBRARY_DIRS "${LIBRARY_DIRS}" PARENT_SCOPE)
     link_directories (${LIBRARY_DIRS})
 

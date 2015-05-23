@@ -15,10 +15,6 @@ if (BUILD_BOOST)
   add_dependencies (xournal-thumbnailer boost)
 endif (BUILD_BOOST)
 
-if (EXT_GLIBMM)
-  add_dependencies (xournal-thumbnailer Glibmm)
-endif (EXT_GLIBMM)
-
 add_custom_command (TARGET xournal-thumbnailer POST_BUILD
   COMMAND ${CMAKE_STRIP} xournal-thumbnailer
 )
