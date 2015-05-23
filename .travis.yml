@@ -19,7 +19,7 @@ before_script:
   - "cd build"
 
 script:
-  - "cmake .. -DBUILD_BOOST:BOOL=ON -DEXT_GLIBMM:BOOL=ON"
+  - "cmake .. -DBUILD_BOOST:BOOL=ON -DEXT_GLIBMM:BOOL=ON -DCMAKE_DEBUG_INCLUDES_LDFLAGS:BOOL=ON"
   - "make"
 
 os: linux
