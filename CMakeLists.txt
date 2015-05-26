@@ -132,6 +132,9 @@ endif (ENABLE_OS)
 
 # Mathtex
 option (ENABLE_MATHTEX "Mathtex support" OFF)
+if (ENABLE_MATHTEX AND WIN32)
+    message (FATAL_ERROR "Mathtex is not supported on Windows for now")
+endif (ENABLE_MATHTEX AND WIN32)
 
 # Unstable features
 
@@ -260,7 +263,6 @@ add_custom_target (desktop-uninstall
 )
 
 message ("
-
 Configuration:
 	Compiler:                   ${CMAKE_CXX_COMPILER}
 	Overlay Scrollbar enabled:  ${ENABLE_OS}

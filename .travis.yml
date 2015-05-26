@@ -1,8 +1,7 @@
 language: cpp
 
-compiler:
-  - gcc
-  - clang
+# clang is not supported for poppler
+compiler: gcc
 
 before_install:
   - "sudo apt-get update -qq"
