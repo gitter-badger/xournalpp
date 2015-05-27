@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 #endif
 
 	// Init GTK Display
-	gdk_display_open_default_libgtk_only();
+	//gdk_display_open_default_libgtk_only();
 
 	// Get the top level suite from the registry
 	CppUnit::Test *suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
