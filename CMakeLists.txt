@@ -122,6 +122,7 @@ option (ENABLE_CPPUNIT "Build CppUnit test instead of xournalpp application" OFF
 if (ENABLE_CPPUNIT)
   pkg_check_modules (CppUnit REQUIRED "cppunit >= 1.12-0")
   enable_testing ()
+  include (CTest)
 endif (ENABLE_CPPUNIT)
 
 # Overlay scrollbar
