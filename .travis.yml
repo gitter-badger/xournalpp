@@ -16,5 +16,5 @@ install:
   - "sudo dpkg --install cmake-data_2.8.8-2ubuntu1_all.deb cmake_2.8.8-2ubuntu1_amd64.deb" 
 
 script:
-  - "ctest -VV --output-on-failure -S .travis.ctest -DBUILD_BOOST=ON -DEXT_GLIBMM=ON -DCMAKE_DEBUG_INCLUDES_LDFLAGS=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON -DDEV_ENABLE_GCOV=ON .."
+  - "ctest -VV --output-on-failure -S .travis.ctest"
 
