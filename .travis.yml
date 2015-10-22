@@ -9,13 +9,6 @@ os: linux
 
 sudo: false
 
-env:
-  global: 
-   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-   #   via the "travis encrypt" command using the project repo's public key
-   - secure: "DxwzqXcJV/9qPwUCi7DQrqzeU73ACRhS0i8suV9tYpUDJ7ZuwwSK/GMVt2jMTNjZbJwKFv8ELLu0MIdTfX3UvG+++lfxLx4yldEwl4CtjPJaClB2rTou2SAiZPMBMyX6eHKfx0XB4xtsqwtKRIvF47tB9i3w+aPcb8C4DE6hXmU="
-
-
 addons:
   apt:
     packages:
@@ -43,7 +36,7 @@ addons:
       name: "MarPiRK/xournalpp"
       description: "Notetaking software designed around a tablet."
     notification_email: marek@pikula.co
-    build_command_prepend: "cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON"
+    build_command_prepend: "find .; mkdir build; cd build; cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON"
     build_command: "make"
     branch_pattern: coverity_scan
 
