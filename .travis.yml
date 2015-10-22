@@ -9,9 +9,6 @@ os: linux
 
 sudo: false
 
-cache:
-- ccache
-
 env:
   global: 
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
@@ -46,18 +43,15 @@ addons:
       name: "MarPiRK/xournalpp"
       description: "Notetaking software designed around a tablet."
     notification_email: marek@pikula.co
-    build_command_prepend: "mkdir build && cd build && cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON"
+    build_command_prepend: "cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON"
     build_command: "make"
     branch_pattern: coverity_scan
 
-before_script:
-  - "mkdir build"
-  - "cd build"
+#before_script:
+#  - "mkdir build"
+#  - "cd build"
 
-script:
-  - "cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DCMAKE_DEBUG_INCLUDES_LDFLAGS=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON -DDEBUG_COMPILE=ON"
-  - "make"
-  - "ctest"
-
-notifications:
-  slack: xournalpp:D5mvotdm0Rnn0ejvZf0FIxgV
+#script:
+#  - "cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DCMAKE_DEBUG_INCLUDES_LDFLAGS=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON -DDEBUG_COMPILE=ON"
+#  - "make"
+#  - "ctest"
