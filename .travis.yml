@@ -5,6 +5,9 @@ language:
 # clang is not supported for poppler
 compiler: gcc
 
+cache:
+- ccache
+
 os: linux
 
 sudo: false
@@ -42,15 +45,15 @@ addons:
       name: "MarPiRK/xournalpp"
       description: "Notetaking software designed around a tablet."
     notification_email: marek@pikula.co
-    build_command_prepend: "find .; mkdir build; cd build; cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON"
+    build_command_prepend: "mkdir build; cd build; cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON"
     build_command: "make"
     branch_pattern: coverity_scan
 
-#before_script:
-#  - "mkdir build"
-#  - "cd build"
+before_script:
+  - "mkdir build"
+  - "cd build"
 
-#script:
-#  - "cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DCMAKE_DEBUG_INCLUDES_LDFLAGS=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON -DDEBUG_COMPILE=ON"
-#  - "make"
-#  - "ctest"
+script:
+  - "cmake .. -DBUILD_POPPLER=ON -DEXT_GLIBMM=ON -DCMAKE_DEBUG_INCLUDES_LDFLAGS=ON -DENABLE_MATHTEX=ON -DENABLE_OS=ON -DENABLE_CPPUNIT=ON -DUNSTABLE_LAYERS_SIDEBAR=ON -DDEBUG_COMPILE=ON"
+  - "make"
+  - "ctest"
